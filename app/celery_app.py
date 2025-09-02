@@ -5,24 +5,28 @@ celery_app = Celery(
     "celery_application",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["app.tasks.users"],  # explicit import(s)
+    include=[
+        "app.tasks.users",
+        "app.tasks.addresses",
+        "app.tasks.cards",
+    ],
 )
 
 celery_app.conf.timezone = "UTC"
 celery_app.autodiscover_tasks(["app.tasks"])
 
-# Periodic tasks: tweak schedules as needed.
+# Periodic tasks (intervals from .env)
 celery_app.conf.beat_schedule = {
-    "fetch-users-every-5m": {
+    "fetch-users-periodic": {
         "task": "fetch_users",
-        "schedule": 300.0,
+        "schedule": float(settings.users_interval),
     },
-    "fetch-addresses-every-10m": {
+    "fetch-addresses-periodic": {
         "task": "fetch_addresses",
-        "schedule": 600.0,
+        "schedule": float(settings.addresses_interval),
     },
-    "fetch-cards-every-10m": {
+    "fetch-credit-cards-periodic": {
         "task": "fetch_credit_cards",
-        "schedule": 600.0,
+        "schedule": float(settings.cards_interval),
     },
 }
