@@ -9,7 +9,7 @@ from app.db.models import User
 from app.db.repositories import create_address_for_user
 
 log = logging.getLogger(__name__)
-ADDR_URL = "https://random-data-api.com/api/v2/addresses"
+ADDR_URL = "https://fakerapi.it/api/v1/addresses?_locale=en_US&_quantity=1"
 
 def _pick(d: dict[str, Any], *keys: str) -> str:
     for k in keys:
