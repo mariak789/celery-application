@@ -7,7 +7,7 @@ from app.db.base import SessionLocal
 from app.db.repositories import upsert_user
 
 log = logging.getLogger(__name__)
-USERS_URL = "https://jsonplaceholder.typicode.com/users"
+USERS_URL = "https://fakerapi.it/api/v1/users?_locale=en_US&_quantity=10"
 
 
 @celery_app.task(                                 
