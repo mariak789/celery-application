@@ -9,7 +9,7 @@ from app.db.models import User
 from app.db.repositories import create_card_for_user
 
 log = logging.getLogger(__name__)
-CARDS_URL = "https://random-data-api.com/api/v2/credit_cards"
+CARDS_URL = "https://fakerapi.it/api/v1/credit_cards?_quantity=1"
 
 def _as_dict(p: Any) -> dict[str, Any]:
     return p[0] if isinstance(p, list) else p
