@@ -1,10 +1,12 @@
 import requests_mock
+from sqlalchemy import select, func
 
 from app.tasks.users import fetch_users
+from app.db.models import User
 
 
 def test_fetch_users_inserts_rows(monkeypatch, db_session):
-    # make task use the test session instead of the real SessionLocal
+    # make task use the test DB session
     monkeypatch.setattr("app.tasks.users.SessionLocal", lambda: db_session)
 
     payload = {
@@ -37,6 +39,6 @@ def test_fetch_users_inserts_rows(monkeypatch, db_session):
         inserted = fetch_users()
         assert inserted == 2
 
-    # verify persisted rows
-    rows = db_session.execute("SELECT COUNT(*) FROM users").scalar()
-    assert rows == 2
+    # verify rows in DB
+    cnt = db_session.execute(select(func.count()).select_from(User)).scalar_one()
+    assert cnt == 2

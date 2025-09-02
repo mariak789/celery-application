@@ -1,11 +1,13 @@
+import re
 import requests_mock
+from sqlalchemy import select, func
 
 from app.tasks.addresses import fetch_addresses
-from app.db.models import User
+from app.db.models import User, Address
 
 
 def test_fetch_addresses_links_to_users(monkeypatch, db_session):
-    # seed two users in the test DB
+    # seed users that addresses will be linked to
     db_session.add_all(
         [
             User(ext_id=1, name="A", username="a", email="a@a.a"),
@@ -14,6 +16,7 @@ def test_fetch_addresses_links_to_users(monkeypatch, db_session):
     )
     db_session.commit()
 
+    # make task use the test DB session
     monkeypatch.setattr("app.tasks.addresses.SessionLocal", lambda: db_session)
 
     payload = {
@@ -26,18 +29,19 @@ def test_fetch_addresses_links_to_users(monkeypatch, db_session):
     }
 
     with requests_mock.Mocker() as m:
+        # regex to match any query params on the endpoint
         m.get(
-            "https://fakerapi.it/api/v1/addresses?_locale=en_US&_quantity=10",
+            re.compile(r"https://fakerapi\.it/api/v1/addresses.*"),
             json=payload,
             status_code=200,
         )
         saved = fetch_addresses()
         assert saved == 2
 
-    # verify addresses written and linked
-    count = db_session.execute("SELECT COUNT(*) FROM addresses").scalar()
-    assert count == 2
-    linked = db_session.execute(
-        "SELECT COUNT(*) FROM addresses WHERE user_id IS NOT NULL"
-    ).scalar()
-    assert linked == 2
+    # verify addresses written & linked
+    cnt = db_session.execute(select(func.count()).select_from(Address)).scalar_one()
+    assert cnt == 2
+    linked_cnt = db_session.execute(
+        select(func.count()).select_from(Address).where(Address.user_id.is_not(None))
+    ).scalar_one()
+    assert linked_cnt == 2
