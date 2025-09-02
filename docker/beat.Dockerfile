@@ -10,6 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 
 COPY . .
 
-# Ensure DB schema exists before worker starts (safe if already applied)
 CMD sh -c "alembic upgrade head || true && \
-           celery -A app.celery_app.celery_app worker --loglevel=INFO"
+           celery -A app.celery_app.celery_app beat --loglevel=INFO"
