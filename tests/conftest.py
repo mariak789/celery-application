@@ -4,7 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
-from app.db.base import Base, get_session
+from app.db.base import get_session                 
+from app.db.models import Base                      
+
+import app.db.models
 
 
 @pytest.fixture(scope="session")
