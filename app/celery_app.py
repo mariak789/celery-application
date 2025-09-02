@@ -5,6 +5,7 @@ celery_app = Celery(
     "celery_application",
     broker=settings.redis_url,
     backend=settings.redis_url,
+    include=["app.tasks.users"],  # explicit import(s)
 )
 
 celery_app.conf.timezone = "UTC"
