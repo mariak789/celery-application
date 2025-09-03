@@ -88,7 +88,7 @@ DEPLOYMENT on AWS
 	•	Install Docker + Docker Compose
 	•	Clone repo + configure .env
 	•	Run docker compose up -d
-	•	Open http://<EC2_PUBLIC_IP>:8000/health
+	•	Open http://56.228.24.150:8000/health 
 
 
 
