@@ -1,4 +1,4 @@
-from app.db.models import User, Address, CreditCard
+from app.db.models import Address, CreditCard, User
 
 
 def test_health(client):

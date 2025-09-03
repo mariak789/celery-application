@@ -1,9 +1,10 @@
 import re
-import requests_mock
-from sqlalchemy import select, func
 
+import requests_mock
+from sqlalchemy import func, select
+
+from app.db.models import Address, User
 from app.tasks.addresses import fetch_addresses
-from app.db.models import User, Address
 
 
 def test_fetch_addresses_links_to_users(monkeypatch, db_session):

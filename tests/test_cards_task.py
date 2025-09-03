@@ -1,8 +1,8 @@
 import requests_mock
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 
+from app.db.models import CreditCard, User
 from app.tasks.cards import fetch_credit_cards
-from app.db.models import User, CreditCard
 
 
 def test_fetch_cards_links_to_users(monkeypatch, db_session):

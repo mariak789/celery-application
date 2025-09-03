@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from typing import List
-from sqlalchemy import String, Integer, ForeignKey
+
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -13,7 +14,9 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    ext_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=False)  # id із зовн. API
+    ext_id: Mapped[int] = mapped_column(
+        Integer, unique=True, index=True, nullable=False
+    )  # id із зовн. API
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     username: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), nullable=False)

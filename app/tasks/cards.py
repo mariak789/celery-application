@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+
 import requests
 from sqlalchemy import select
 
@@ -11,8 +12,10 @@ from app.db.repositories import create_card_for_user
 log = logging.getLogger(__name__)
 CARDS_URL = "https://random-data-api.com/api/v2/credit_cards?size=1"
 
+
 def _as_dict(p: Any) -> dict[str, Any]:
     return p[0] if isinstance(p, list) else p
+
 
 @celery_app.task(name="fetch_credit_cards")
 def fetch_credit_cards() -> int:

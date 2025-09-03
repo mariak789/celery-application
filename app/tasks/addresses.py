@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+
 import requests
 from sqlalchemy import select
 
@@ -11,12 +12,14 @@ from app.db.repositories import create_address_for_user
 log = logging.getLogger(__name__)
 ADDR_URL = "https://fakerapi.it/api/v1/addresses?_locale=en_US&_quantity=1"
 
+
 def _pick(d: dict[str, Any], *keys: str) -> str:
     for k in keys:
         v = d.get(k)
         if v is not None:
             return str(v)
     return ""
+
 
 @celery_app.task(name="fetch_addresses")
 def fetch_addresses() -> int:

@@ -4,10 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.main import app as fastapi_app
 from app.db.base import get_session
 from app.db.models import Base
-import app.db.models  
+from app.main import app as fastapi_app
 
 
 @pytest.fixture(scope="session")
@@ -17,9 +16,9 @@ def engine():
         "sqlite+pysqlite:///:memory:",
         future=True,
         connect_args={"check_same_thread": False},
-        poolclass=StaticPool, 
+        poolclass=StaticPool,
     )
-   
+
     Base.metadata.create_all(eng)
     return eng
 

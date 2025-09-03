@@ -1,9 +1,12 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.db.models import User, Address, CreditCard
+
+from app.db.models import Address, CreditCard, User
 
 
-def upsert_user(db: Session, *, ext_id: int, name: str, username: str, email: str) -> User:
+def upsert_user(
+    db: Session, *, ext_id: int, name: str, username: str, email: str
+) -> User:
     """Insert-or-update a user by external id (idempotent for periodic runs)."""
     user = db.execute(select(User).where(User.ext_id == ext_id)).scalar_one_or_none()
     if user is None:
@@ -39,7 +42,9 @@ def create_address_for_user(
     return addr
 
 
-def create_card_for_user(db: Session, *, user_id: int, number: str, type_: str) -> CreditCard:
+def create_card_for_user(
+    db: Session, *, user_id: int, number: str, type_: str
+) -> CreditCard:
     """Create a new credit card record linked to a user."""
     card = CreditCard(user_id=user_id, number=number, type=type_)
     db.add(card)

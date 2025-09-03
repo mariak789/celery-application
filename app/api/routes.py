@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.db.base import get_session
+from app.db.models import Address, CreditCard, User
 from app.db.repositories import list_users
-from app.db.models import User, Address, CreditCard
 
 router = APIRouter()
 
@@ -40,8 +40,14 @@ def user_details(user_id: int, db: Session = Depends(get_session)) -> dict:
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
 
-    addresses = db.execute(select(Address).where(Address.user_id == user_id)).scalars().all()
-    cards = db.execute(select(CreditCard).where(CreditCard.user_id == user_id)).scalars().all()
+    addresses = (
+        db.execute(select(Address).where(Address.user_id == user_id)).scalars().all()
+    )
+    cards = (
+        db.execute(select(CreditCard).where(CreditCard.user_id == user_id))
+        .scalars()
+        .all()
+    )
 
     return {
         "id": user.id,
@@ -49,6 +55,9 @@ def user_details(user_id: int, db: Session = Depends(get_session)) -> dict:
         "name": user.name,
         "username": user.username,
         "email": user.email,
-        "addresses": [{"street": a.street, "city": a.city, "country": a.country} for a in addresses],
+        "addresses": [
+            {"street": a.street, "city": a.city, "country": a.country}
+            for a in addresses
+        ],
         "cards": [{"number": c.number, "type": c.type} for c in cards],
     }

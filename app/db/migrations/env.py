@@ -1,27 +1,30 @@
-# app/db/migrations/env.py
+# ruff: noqa: E402  # English: allow imports after sys.path manipulation
+
 from __future__ import annotations
 
-# --- Make project root importable for Alembic ---
-# Alembic runs from the migrations folder, so Python can't find top-level "app".
-# We add "/app" (the project root in the container) to sys.path explicitly.
+# English: put project root on sys.path so `app.*` imports work when Alembic runs standalone
 import sys
 from pathlib import Path
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]  # /app
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-# ------------------------------------------------
 
-from logging.config import fileConfig
-from alembic import context
+# ---------------- third-party & local imports (after sys.path tweak) ----------------
+from logging.config import fileConfig  # English: stdlib
+
+from alembic import context  # English: third-party
 from sqlalchemy import engine_from_config, pool
 
-from app.core.config import settings
+from app.core.config import settings  # English: local
 from app.db.models import Base
 
-# Alembic config object, provides access to values within the .ini file.
+# ... (далі без змін)
+
+# English: Alembic config object; values are read from alembic.ini unless overridden below
 config = context.config
 
-# Prefer URL from settings (env var), fallback to alembic.ini default.
+# English: prefer URL from Settings (env var) over alembic.ini default
 if settings.database_url:
     config.set_main_option("sqlalchemy.url", settings.database_url)
 else:
@@ -33,16 +36,16 @@ else:
         ),
     )
 
-# Enable Alembic logging if config file is present.
+# English: enable Alembic logging if config file is present
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Metadata used by autogenerate
+# English: metadata used by autogenerate
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Generate SQL scripts without a DB connection."""
+    """Генерація SQL без підключення до БД."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -56,7 +59,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations with a real DB connection."""
+    """Запуск міграцій з підключенням до БД."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",

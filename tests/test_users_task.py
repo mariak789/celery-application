@@ -1,8 +1,8 @@
 import requests_mock
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 
-from app.tasks.users import fetch_users
 from app.db.models import User
+from app.tasks.users import fetch_users
 
 
 def test_fetch_users_inserts_rows(monkeypatch, db_session):
