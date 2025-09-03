@@ -4,9 +4,9 @@ This project demonstrates a Python application using Celery, PostgreSQL, and Red
 It periodically fetches data from external APIs and stores it into the database.
 
 Features:
-	•	Periodic tasks with Celery Beat:
-    •   Fetch users and addresses from fakerapi.it
-    •   Fetch credit cards from Random Data Api (this source is frequently instable, better to switch to Faker lib for offline work and stability)
+•	Periodic tasks with Celery Beat:
+•   Fetch users and addresses from fakerapi.it
+•   Fetch credit cards from Random Data Api (this source is frequently instable, better to switch to Faker lib for offline work and stability)
 
 Data stored in PostgreSQL accross 3 linked tables:
 • users
