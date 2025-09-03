@@ -70,8 +70,12 @@ Open worker container shell and call a task
 ```docker compose exec db psql -U postgres -d celery_app -c "\dt"```
 
 7. Run tests
+ 
+ at first, install dev-dependencies inside container
+```docker compose exec api sh -lc "pip install -r requirements-dev.txt"```
 
-```docker compose exec api pytest -v```
+ run tests
+```docker compose exec api sh -lc "pytest -v"```
 
 8. Linting 
 
