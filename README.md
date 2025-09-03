@@ -35,8 +35,13 @@ Getting started
 
 1. Clone repository 
 
+<pre>
+```bash
 git clone https://github.com/mariak789/celery-application.git
 cd celery-application
+```
+</pre>
+
 
 2. Configure environment 
 Copy example env:
