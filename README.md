@@ -6,7 +6,7 @@ It periodically fetches data from external APIs and stores it into the database.
 Features:
 •	Periodic tasks with Celery Beat:
 •   Fetch users and addresses from fakerapi.it
-•   Fetch credit cards from Random Data Api (this source is frequently instable, better to switch to Faker lib for offline work and stability)
+•   Fetch credit cards from Random Data Api (this source is frequently instable,    better to switch to Faker lib for offline work and stability)
 
 Data stored in PostgreSQL accross 3 linked tables:
 • users
@@ -35,23 +35,18 @@ Getting started
 
 1. Clone repository 
 
-<pre>
-```bash
-git clone https://github.com/mariak789/celery-application.git
-cd celery-application
-```
-</pre>
-
+```git clone https://github.com/mariak789/celery-application.git```
+```cd celery-application```
 
 2. Configure environment 
 Copy example env:
 
-cp .env.example .env 
+```cp .env.example .env``` 
 (edit if needed, DB credentials, Redis URL)
 
 3. Run with Docker 
 
-docker compose up --build 
+```docker compose up --build``` 
 
 Services started:
 	•	api → http://localhost:8000
@@ -62,25 +57,25 @@ Services started:
 
 4. Check health 
 
-curl http://localhost:8000/health
+```curl http://localhost:8000/health```
 # {"status": "ok"}
 
 5. Run tasks manually 
 Open worker container shell and call a task 
 
-docker compose exec worker celery -A app.celery_app.celery_app call fetch_users
+```docker compose exec worker celery -A app.celery_app.celery_app call fetch_users```
 
 6. Database check 
 
-docker compose exec db psql -U postgres -d celery_app -c "\dt"
+```docker compose exec db psql -U postgres -d celery_app -c "\dt"```
 
 7. Run tests
 
-docker compose exec api pytest -v
+```docker compose exec api pytest -v```
 
 8. Linting 
 
-pre-commit run --all-files
+```pre-commit run --all-files```
 
 
 DEPLOYMENT on AWS 
