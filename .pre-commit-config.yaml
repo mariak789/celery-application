@@ -1,4 +1,3 @@
-# English: run formatters/linters before every commit
 repos:
   - repo: https://github.com/psf/black
     rev: 24.8.0

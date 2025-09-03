@@ -1,7 +1,4 @@
-# docker-compose.yml (at repo root)
-
 x-env-app: &env-app
-  # App reads these in app.core.config
   DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/celery_app
   REDIS_URL: redis://redis:6379/0
   PYTHONPATH: /app          
