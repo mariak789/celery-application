@@ -84,10 +84,13 @@ Open worker container shell and call a task
 
 DEPLOYMENT on AWS 
 
-	•	Create EC2 instance (Amazon Linux 2023 recommended)
-	•	Install Docker + Docker Compose
-	•	Clone repo + configure .env
+	•	Created EC2 instance (Amazon Linux 2023, t2.micro, Free Tier)
+	•	Installed Docker + Docker Compose
+	•	Cloned repo + configured .env
 	•	Run docker compose up -d
+
+	Opened port 8000 in the EC2 Security Group for external access. 
+	
 	•	Open http://56.228.24.150:8000/health 
 
 
