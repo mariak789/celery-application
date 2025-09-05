@@ -10,8 +10,12 @@ router = APIRouter()
 
 
 @router.get("/health")
-def health() -> dict:
-    return {"status": "ok"}
+def health(db: Session = Depends(get_session)) -> dict:
+    try:
+        db.execute(select(1))
+        return {"status": "ok", "db": "available"}
+    except Exception:
+        return {"status": "error", "db": "unavailable"}
 
 
 @router.get("/users")
