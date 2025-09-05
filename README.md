@@ -110,8 +110,8 @@ Running tasks manually:
 - ``` docker compose exec db psql -U postgres -d celery_app -c "SELECT COUNT(*) FROM users;" ```
 
 ### Run tests
-
-``` docker compose exec api pytest -v ```
+- ``` docker compose exec api sh -lc "pip install -r requirements-dev.txt" ```
+- ``` docker compose exec api pytest -v ```
 
 ### Linting 
 
