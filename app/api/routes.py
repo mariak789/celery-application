@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_user_repository
 from app.api.schemas import (
     AddressOut,
     CreditCardOut,
@@ -12,8 +13,7 @@ from app.api.schemas import (
     UserListItem,
 )
 from app.db.base import get_session
-from app.db.models import Address, CreditCard, User
-from app.db.repositories import list_users
+from app.repositories.users import UserRepository
 
 router = APIRouter()
 
@@ -28,38 +28,21 @@ def health(db: Session = Depends(get_session)) -> HealthResponse:
 
 
 @router.get("/users", response_model=List[UserListItem])
-def users(db: Session = Depends(get_session)) -> List[UserListItem]:
-    """Shallow list of users to quickly verify ingestion."""
-    rows = list_users(db)
-    return [
-        UserListItem(
-            id=u.id,
-            ext_id=u.ext_id,
-            name=u.name,
-            username=u.username,
-            email=u.email,
-        )
-        for u in rows
-    ]
+def users(repo: UserRepository = Depends(get_user_repository)) -> List[UserListItem]:
+    rows = repo.list_users()
+    return [UserListItem.model_validate(u) for u in rows]
 
 
 @router.get("/users/{user_id}", response_model=UserDetailsResponse)
 def user_details(
-    user_id: int, db: Session = Depends(get_session)
+    user_id: int, repo: UserRepository = Depends(get_user_repository)
 ) -> UserDetailsResponse:
-    """Return a user with linked addresses and credit cards."""
-    user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    user = repo.get_user(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
 
-    addresses = (
-        db.execute(select(Address).where(Address.user_id == user_id)).scalars().all()
-    )
-    cards = (
-        db.execute(select(CreditCard).where(CreditCard.user_id == user_id))
-        .scalars()
-        .all()
-    )
+    addresses = repo.get_addresses(user_id)
+    cards = repo.get_cards(user_id)
 
     return UserDetailsResponse(
         id=user.id,
