@@ -1,7 +1,7 @@
 # Celery Application
 
 This project demonstrates a Python application using **Celery**, **FastAPI**, **PostgreSQL**, and **Redis**.  
-It periodically fetches data from external APIs (or Faker for offline mode) and stores it into the database.
+It periodically fetches data from external APIs (or Faker for offline mode and due to random-data-api host instability) and stores it into the database.
 
 ---
 
@@ -49,8 +49,8 @@ You can configure how credit card data is generated:
 
 ### 1. Clone repository 
 
-```git clone https://github.com/mariak789/celery-application.git```
-```cd celery-application```
+- ```git clone https://github.com/mariak789/celery-application.git```
+- ```cd celery-application```
 
 ### 2. Configure environment 
 Copy example env:
