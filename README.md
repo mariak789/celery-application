@@ -43,6 +43,7 @@ You can configure how credit card data is generated:
 - **Linting**: Black, Ruff, Isort
 - **Containerization**: Docker + Docker Compose
 
+---
 
 ## Getting started
 
@@ -61,45 +62,39 @@ Copy example env:
 
 ```docker compose up --build``` 
 
-Services started:
-	•	api → http://localhost:8000
-	•	db (Postgres) → localhost:5433
-	•	redis → localhost:6379
-	•	worker (Celery worker)
-	•	beat (Celery scheduler)
 
-Celery tasks
+## Celery tasks
 
 The application defines 3 periodic tasks (scheduled via Celery Beat):
-- fetch_users
-- fetch_addresses
-- fetch_credit_cards
+- `fetch_users`
+- `fetch_addresses`
+- `fetch_credit_cards`
 
 Running tasks manually: 
 
-# Fetch users 
+### Fetch users 
 
 ``` docker compose exec worker celery -A app.celery_app.celery_app call fetch_users ```
 
-# Fetch addresses
+### Fetch addresses
 
 ``` docker compose exec worker celery -A app.celery_app.celery_app call fetch_addresses ```
 
-# Fetch credit cards 
+### Fetch credit cards 
 
 ``` docker compose exec worker celery -A app.celery_app.celery_app call fetch_credit_cards ```
 
 ### API Endpoints
 
-# Health and database availability check
+### Health and database availability check
 
 ``` curl http://localhost:8000/health ```
 
-# Users list 
+### Users list 
 
 ``` curl http://localhost:8000/users ```
 
-# User details
+### User details
 
 ``` curl http://localhost:8000/users/1 ```
 
@@ -110,8 +105,10 @@ Running tasks manually:
 ### Linting 
 
 ``` pre-commit run --all-files ```
+ 
+ ---
 
-# Deployment of AWS 
+### Deployment of AWS 
 - Create EC-2 instance (Amazon Linux 2023, t2.micro)
 - Install Docker + Docker Compose 
 - Clone repository & configure .env
@@ -119,7 +116,7 @@ Running tasks manually:
 
 ``` docker compose up -d ```
 
-# Open in browser: 
+### Open in browser: 
 
 Open http://56.228.24.150:8000/health 
 
