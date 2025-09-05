@@ -5,7 +5,7 @@ It periodically fetches data from external APIs (or Faker for offline mode and d
 
 ---
 
-##Features:
+## Features:
 - **Periodic tasks with Celery Beat**
   - `fetch_users` – fetch users from API and store them in `users`
   - `fetch_addresses` – fetch addresses for users and store them in `addresses`
@@ -27,11 +27,11 @@ It periodically fetches data from external APIs (or Faker for offline mode and d
 - **Pre-commit hooks**: black, ruff, isort
 - Deployable to **AWS EC2**
 
-CREDIT CARD PROVIDER 
+## CREDIT CARD PROVIDER 
 
 You can configure how credit card data is generated:
 - CARDS_PROVIDER=remote -> fetch cards from Random Data API, cards saved in DB 
-- CARDS_PROVIDER=faker -> generate cards locally using Faker, no external API dependency
+- CARDS_PROVIDER=faker -> generate cards locally using Faker, no external API dependency (random-data-api is frequently instable)
 
 
 ## Stack
