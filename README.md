@@ -1,55 +1,63 @@
-Celery Application
+# Celery Application
 
-This project demonstrates a Python application using Celery, PostgreSQL, and Redis.
-It periodically fetches data from external APIs and stores it into the database.
+This project demonstrates a Python application using **Celery**, **FastAPI**, **PostgreSQL**, and **Redis**.  
+It periodically fetches data from external APIs (or Faker for offline mode) and stores it into the database.
 
-Features:
-•	Periodic tasks with Celery Beat:
-•   Fetch users and addresses from fakerapi.it
+---
+
+##Features:
+- **Periodic tasks with Celery Beat**
+  - `fetch_users` – fetch users from API and store them in `users`
+  - `fetch_addresses` – fetch addresses for users and store them in `addresses`
+  - `fetch_credit_cards` – fetch credit cards for users and store them in `credit_cards`
+- Data stored in PostgreSQL across 3 linked tables:
+  - `users`
+  - `addresses`
+  - `credit_cards`
+- **API Endpoints** (FastAPI):
+  - `GET /health` – check service & DB availability
+  - `GET /users` – list of users (id, ext_id, name, username, email)
+  - `GET /users/{user_id}` – user details with addresses and credit cards
+
+- **Repositories layer**: separates DB access from API routes
+- **DTO / Pydantic response models**: typed and validated responses
+- **Dockerized**: API, Celery worker, Celery beat, Redis, Postgres
+- **Alembic** for database migrations
+- **Pytest** with mocking for testing
+- **Pre-commit hooks**: black, ruff, isort
+- Deployable to **AWS EC2**
 
 CREDIT CARD PROVIDER 
 
-You can configure fow credit card data is generated:
+You can configure how credit card data is generated:
 - CARDS_PROVIDER=remote -> fetch cards from Random Data API, cards saved in DB 
 - CARDS_PROVIDER=faker -> generate cards locally using Faker, no external API dependency
 
-Data stored in PostgreSQL accross 3 linked tables:
-• users
-• addresses
-• credit_cards
 
-Dockerized (API, Celery worker, Celery beat, Redis, Postgres)
+## Stack
 
-• alembic for database migrations
-• pytest with mocking for testing 
-• Pre-commit hooks with black, ruff, isort
-• Health check endpoint (/heath) as well as (/users), (/users/{user_id}) in the API 
-
-Deployable to AWS (EC2)
-
-Stack
-	•	Python: Celery, FastAPI, SQLAlchemy, Alembic, Pydantic
-	•	Database: PostgreSQL
-	•	Broker: Redis
-	•	Testing: Pytest
-	•	Linting: Black, Ruff, Isort
-	•	Containerization: Docker + Docker Compose
+- **Python**: Celery, FastAPI, SQLAlchemy, Alembic, Pydantic
+- **Database**: PostgreSQL
+- **Broker**: Redis
+- **Testing**: Pytest
+- **Linting**: Black, Ruff, Isort
+- **Containerization**: Docker + Docker Compose
 
 
-Getting started
+## Getting started
 
-1. Clone repository 
+### 1. Clone repository 
 
 ```git clone https://github.com/mariak789/celery-application.git```
 ```cd celery-application```
 
-2. Configure environment 
+### 2. Configure environment 
 Copy example env:
 
 ```cp .env.example .env``` 
 (edit if needed, DB credentials, Redis URL)
 
-3. Run with Docker 
+### 3. Run with Docker 
 
 ```docker compose up --build``` 
 
@@ -60,43 +68,58 @@ Services started:
 	•	worker (Celery worker)
 	•	beat (Celery scheduler)
 
-4. Check health 
+Celery tasks
 
-```curl http://localhost:8000/health```
-# {"status": "ok"}
+The application defines 3 periodic tasks (scheduled via Celery Beat):
+- fetch_users
+- fetch_addresses
+- fetch_credit_cards
 
-5. Run tasks manually 
-Open worker container shell and call a task 
+Running tasks manually: 
 
-```docker compose exec worker celery -A app.celery_app.celery_app call fetch_users```
+# Fetch users 
 
-6. Database check 
+``` docker compose exec worker celery -A app.celery_app.celery_app call fetch_users ```
 
-```docker compose exec db psql -U postgres -d celery_app -c "\dt"```
+# Fetch addresses
 
-7. Run tests
- 
- at first, install dev-dependencies inside container
-```docker compose exec api sh -lc "pip install -r requirements-dev.txt"```
+``` docker compose exec worker celery -A app.celery_app.celery_app call fetch_addresses ```
 
- run tests
-```docker compose exec api sh -lc "pytest -v"```
+# Fetch credit cards 
 
-8. Linting 
+``` docker compose exec worker celery -A app.celery_app.celery_app call fetch_credit_cards ```
 
-```pre-commit run --all-files```
+### API Endpoints
 
+# Health and database availability check
 
-DEPLOYMENT on AWS 
+``` curl http://localhost:8000/health ```
 
-	•	Created EC2 instance (Amazon Linux 2023, t2.micro, Free Tier)
-	•	Installed Docker + Docker Compose
-	•	Cloned repo + configured .env
-	•	Run docker compose up -d
+# Users list 
 
-	Opened port 8000 in the EC2 Security Group for external access. 
+``` curl http://localhost:8000/users ```
 
-	•	Open http://56.228.24.150:8000/health 
+# User details
 
+``` curl http://localhost:8000/users/1 ```
 
+### Run tests
+
+``` docker compose exec api pytest -v ```
+
+### Linting 
+
+``` pre-commit run --all-files ```
+
+# Deployment of AWS 
+- Create EC-2 instance (Amazon Linux 2023, t2.micro)
+- Install Docker + Docker Compose 
+- Clone repository & configure .env
+- Run 
+
+``` docker compose up -d ```
+
+# Open in browser: 
+
+Open http://56.228.24.150:8000/health 
 
