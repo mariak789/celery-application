@@ -6,7 +6,12 @@ It periodically fetches data from external APIs and stores it into the database.
 Features:
 •	Periodic tasks with Celery Beat:
 •   Fetch users and addresses from fakerapi.it
-•   Fetch credit cards from Random Data Api (this source is frequently instable,    better to switch to Faker lib for offline work and stability)
+
+CREDIT CARD PROVIDER 
+
+You can configure fow credit card data is generated:
+- CARDS_PROVIDER=remote -> fetch cards from Random Data API, cards saved in DB 
+- CARDS_PROVIDER=faker -> generate cards locally using Faker, no external API dependency
 
 Data stored in PostgreSQL accross 3 linked tables:
 • users
@@ -90,7 +95,7 @@ DEPLOYMENT on AWS
 	•	Run docker compose up -d
 
 	Opened port 8000 in the EC2 Security Group for external access. 
-	
+
 	•	Open http://56.228.24.150:8000/health 
 
 

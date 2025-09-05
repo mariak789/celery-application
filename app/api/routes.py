@@ -1,7 +1,16 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.api.schemas import (
+    AddressOut,
+    CreditCardOut,
+    HealthResponse,
+    UserDetailsResponse,
+    UserListItem,
+)
 from app.db.base import get_session
 from app.db.models import Address, CreditCard, User
 from app.db.repositories import list_users
@@ -9,37 +18,36 @@ from app.db.repositories import list_users
 router = APIRouter()
 
 
-@router.get("/health")
-def health(db: Session = Depends(get_session)) -> dict:
+@router.get("/health", response_model=HealthResponse)
+def health(db: Session = Depends(get_session)) -> HealthResponse:
     try:
         db.execute(select(1))
-        return {"status": "ok", "db": "available"}
+        return HealthResponse(status="ok", db="available")
     except Exception:
-        return {"status": "error", "db": "unavailable"}
+        return HealthResponse(status="error", db="unavailable")
 
 
-@router.get("/users")
-def users(db: Session = Depends(get_session)) -> list[dict]:
+@router.get("/users", response_model=List[UserListItem])
+def users(db: Session = Depends(get_session)) -> List[UserListItem]:
     """Shallow list of users to quickly verify ingestion."""
     rows = list_users(db)
     return [
-        {
-            "id": u.id,
-            "ext_id": u.ext_id,
-            "name": u.name,
-            "username": u.username,
-            "email": u.email,
-        }
+        UserListItem(
+            id=u.id,
+            ext_id=u.ext_id,
+            name=u.name,
+            username=u.username,
+            email=u.email,
+        )
         for u in rows
     ]
 
 
-@router.get("/users/{user_id}")
-def user_details(user_id: int, db: Session = Depends(get_session)) -> dict:
-    """
-    Return a user with linked addresses and credit cards.
-    Useful for manual verification during review.
-    """
+@router.get("/users/{user_id}", response_model=UserDetailsResponse)
+def user_details(
+    user_id: int, db: Session = Depends(get_session)
+) -> UserDetailsResponse:
+    """Return a user with linked addresses and credit cards."""
     user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
@@ -53,15 +61,12 @@ def user_details(user_id: int, db: Session = Depends(get_session)) -> dict:
         .all()
     )
 
-    return {
-        "id": user.id,
-        "ext_id": user.ext_id,
-        "name": user.name,
-        "username": user.username,
-        "email": user.email,
-        "addresses": [
-            {"street": a.street, "city": a.city, "country": a.country}
-            for a in addresses
-        ],
-        "cards": [{"number": c.number, "type": c.type} for c in cards],
-    }
+    return UserDetailsResponse(
+        id=user.id,
+        ext_id=user.ext_id,
+        name=user.name,
+        username=user.username,
+        email=user.email,
+        addresses=[AddressOut.model_validate(a) for a in addresses],
+        cards=[CreditCardOut.model_validate(c) for c in cards],
+    )
