@@ -42,11 +42,12 @@ def create_address_for_user(
     return addr
 
 
-def create_card_for_user(
-    db: Session, *, user_id: int, number: str, type_: str
-) -> CreditCard:
-    """Create a new credit card record linked to a user."""
-    card = CreditCard(user_id=user_id, number=number, type=type_)
+def create_card_for_user(db, user_id: int, number: str, type_: str):
+    card = CreditCard(
+        user_id=user_id,
+        number=number,
+        type=type_,
+    )
     db.add(card)
     db.commit()
     db.refresh(card)

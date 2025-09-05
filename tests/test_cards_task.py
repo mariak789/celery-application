@@ -1,43 +1,56 @@
-import requests_mock
-from sqlalchemy import func, select
+from faker import Faker
+from sqlalchemy import select
 
 from app.db.models import CreditCard, User
-from app.tasks.cards import fetch_credit_cards
+from app.tasks.cards import _generate_card, fetch_credit_cards
 
 
-def test_fetch_cards_links_to_users(monkeypatch, db_session):
-    # seed one user
-    u = User(ext_id=1, name="A", username="a", email="a@a.a")
-    db_session.add(u)
+class _CM:
+    """contextmanager для підміни SessionLocal у тасці."""
+
+    def __init__(self, s):
+        self.s = s
+
+    def __enter__(self):
+        return self.s
+
+    def __exit__(self, exc_type, exc, tb):
+        pass
+
+
+def test_generate_card_is_deterministic_with_seed():
+    fake = Faker()
+    fake.seed_instance(1234)
+    a = _generate_card(fake)
+    fake.seed_instance(1234)
+    b = _generate_card(fake)
+    assert a == b
+    assert "number" in a and "type" in a
+    assert isinstance(a["number"], str)
+    assert isinstance(a["type"], str)
+
+
+def test_fetch_credit_cards_creates_one_card_per_user(db_session, monkeypatch):
+    users = [
+        User(name=f"u{i}", username=f"u{i}", email=f"u{i}@example.com", ext_id=i)
+        for i in range(3)
+    ]
+    db_session.add_all(users)
     db_session.commit()
 
-    # make task use the test DB session
-    monkeypatch.setattr("app.tasks.cards.SessionLocal", lambda: db_session)
+    fake = Faker()
+    fake.seed_instance(42)
+    monkeypatch.setattr("app.tasks.cards._fake", fake, raising=True)
 
-    # 1) random-data-api returns a dict
-    with requests_mock.Mocker() as m:
-        m.get(
-            "https://random-data-api.com/api/v2/credit_cards?size=1",
-            json={"credit_card_number": "4111111111111111", "credit_card_type": "visa"},
-            status_code=200,
-        )
-        n = fetch_credit_cards()
-        assert n == 1
+    monkeypatch.setattr(
+        "app.tasks.cards.SessionLocal", lambda: _CM(db_session), raising=True
+    )
 
-    # 2) random-data-api returns a list with one dict
-    with requests_mock.Mocker() as m:
-        m.get(
-            "https://random-data-api.com/api/v2/credit_cards?size=1",
-            json=[
-                {
-                    "credit_card_number": "5555555555554444",
-                    "credit_card_type": "mastercard",
-                }
-            ],
-            status_code=200,
-        )
-        n = fetch_credit_cards()
-        assert n == 1
+    saved = fetch_credit_cards()
+    assert saved == 3
 
-    cnt = db_session.execute(select(func.count()).select_from(CreditCard)).scalar_one()
-    assert cnt == 2
+    cards = db_session.execute(select(CreditCard)).scalars().all()
+    assert len(cards) == 3
+    user_ids = {u.id for u in users}
+    assert all(c.user_id in user_ids for c in cards)
+    assert all(isinstance(c.number, str) and len(c.number) >= 12 for c in cards)
