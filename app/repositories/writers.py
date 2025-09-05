@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from __future__ import annotations
+
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from app.db.models import Address, CreditCard, User
@@ -21,20 +23,9 @@ def upsert_user(
     return user
 
 
-def get_users_count(db: Session) -> int:
-    """Return total number of users stored."""
-    return db.query(User).count()
-
-
-def list_users(db: Session) -> list[User]:
-    """Return users ordered by local id."""
-    return db.execute(select(User).order_by(User.id)).scalars().all()
-
-
 def create_address_for_user(
     db: Session, *, user_id: int, street: str, city: str, country: str
 ) -> Address:
-    """Create a new address record linked to a user."""
     addr = Address(user_id=user_id, street=street, city=city, country=country)
     db.add(addr)
     db.commit()
@@ -42,13 +33,20 @@ def create_address_for_user(
     return addr
 
 
-def create_card_for_user(db, user_id: int, number: str, type_: str):
-    card = CreditCard(
-        user_id=user_id,
-        number=number,
-        type=type_,
-    )
+def create_card_for_user(
+    db: Session, *, user_id: int, number: str, type_: str
+) -> CreditCard:
+    card = CreditCard(user_id=user_id, number=number, type=type_)
     db.add(card)
     db.commit()
     db.refresh(card)
     return card
+
+
+def db_is_alive(db: Session) -> bool:
+    """Lightweight connectivity check for health endpoint."""
+    try:
+        db.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        return False

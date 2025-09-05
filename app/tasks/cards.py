@@ -9,7 +9,7 @@ from sqlalchemy import select
 from app.celery_app import celery_app
 from app.db.base import SessionLocal
 from app.db.models import User
-from app.db.repositories import create_card_for_user
+from app.repositories import create_card_for_user
 
 log = logging.getLogger(__name__)
 

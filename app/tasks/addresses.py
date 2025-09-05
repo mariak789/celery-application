@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.celery_app import celery_app
 from app.db.base import SessionLocal
 from app.db.models import User
-from app.db.repositories import create_address_for_user
+from app.repositories import create_address_for_user
 
 log = logging.getLogger(__name__)
 ADDR_URL = "https://fakerapi.it/api/v1/addresses?_locale=en_US&_quantity=1"

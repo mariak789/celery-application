@@ -4,7 +4,7 @@ import requests
 
 from app.celery_app import celery_app
 from app.db.base import SessionLocal
-from app.db.repositories import upsert_user
+from app.repositories import upsert_user
 
 log = logging.getLogger(__name__)
 USERS_URL = "https://fakerapi.it/api/v1/users?_locale=en_US&_quantity=10"

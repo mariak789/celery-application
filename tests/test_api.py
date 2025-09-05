@@ -4,7 +4,7 @@ from app.db.models import Address, CreditCard, User
 def test_health(client):
     r = client.get("/health")
     assert r.status_code == 200
-    assert r.json() == {"status": "ok"}
+    assert r.json().get("status") == "ok"
 
 
 def test_users_list(client, db_session):
