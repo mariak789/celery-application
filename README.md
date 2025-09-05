@@ -62,6 +62,12 @@ Copy example env:
 
 ```docker compose up --build``` 
 
+## Services started
+- api → http://localhost:8000
+- db (Postgres) → localhost:5433
+- redis → localhost:6379
+- worker (Celery worker)
+- beat (Celery scheduler)
 
 ## Celery tasks
 
@@ -97,6 +103,11 @@ Running tasks manually:
 ### User details
 
 ``` curl http://localhost:8000/users/1 ```
+
+### Database check 
+
+- ``` docker compose exec db psql -U postgres -d celery_app -c "\dt" ```
+- ``` docker compose exec db psql -U postgres -d celery_app -c "SELECT COUNT(*) FROM users;" ```
 
 ### Run tests
 
